@@ -5,17 +5,18 @@ import base64
 from django.conf import settings
 import os
 
-# Generate or load a key for encryption
-KEY_FILE = os.path.join(settings.BASE_DIR, 'vault.key')
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Load encryption key from environment variable
+VAULT_KEY = os.environ.get('VAULT_KEY')
+if VAULT_KEY is None:
+    raise ValueError('VAULT_KEY environment variable not set')
+# If the key is base64 encoded, ensure it's bytes
 def get_encryption_key():
-    if not os.path.exists(KEY_FILE):
-        key = Fernet.generate_key()
-        with open(KEY_FILE, 'wb') as f:
-            f.write(key)
-    else:
-        with open(KEY_FILE, 'rb') as f:
-            key = f.read()
-    return key
+    return VAULT_KEY.encode()
 
 def encrypt_password(raw_password):
     key = get_encryption_key()

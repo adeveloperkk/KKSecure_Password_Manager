@@ -9,8 +9,15 @@ A secure and modern **Password Manager** web application built with **Django**, 
 
 > *Add your screenshots or a GIF demo here*
 
-![Login Page](https://your-screenshot-link.com/login.png)
-![Vault Dashboard](https://your-screenshot-link.com/vault.png)
+![Login Page]![image](https://github.com/user-attachments/assets/8b75f0bb-7c14-4a8e-9f0a-5d8e25621270)
+
+![Vault Dashboard]![image](https://github.com/user-attachments/assets/c9255bc5-d76c-4bf2-8fc8-11951ff8848f) 
+![image](https://github.com/user-attachments/assets/74bee671-3115-475c-92bb-9f84ccbc3797)
+![image](https://github.com/user-attachments/assets/76a0ac3a-b3e6-427d-83fb-50152689aa2c)
+![image](https://github.com/user-attachments/assets/ec89160c-fcb1-4ccf-91e9-02d4bd62a9d4)
+
+
+
 
 ---
 
