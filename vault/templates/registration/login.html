@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Login</h2>
+<form method="post" style="background:#393e46;padding:1.5rem;border-radius:12px;box-shadow:0 2px 8px #23252633;">{% csrf_token %}
+  <label>Username:
+    <input type="text" name="username" required autocomplete="username">
+  </label>
+  <label>Password:
+    <input type="password" name="password" required autocomplete="current-password">
+  </label>
+  <button type="submit" class="btn">Login</button>
+  <input type="hidden" name="next" value="{{ next }}">
+</form>
+{% if form.errors %}
+  <p style="color:#ff6b6b;text-align:center;">Invalid username or password.</p>
+{% endif %}
+{% endblock %}
