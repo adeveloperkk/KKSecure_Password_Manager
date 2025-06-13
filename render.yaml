@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: passwordmanager
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn Passwordmanager.wsgi:application
+    plan: free
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: Passwordmanager.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com 127.0.0.1 localhost"
+      - key: VAULT_KEY
+        generateValue: true
