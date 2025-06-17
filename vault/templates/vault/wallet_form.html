@@ -64,11 +64,14 @@
   <h2>{% if form.instance.pk %}Edit Wallet Entry{% else %}Add Wallet Entry{% endif %}</h2>
   <form method="post" class="wallet-form">
     {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="form-errors" style="color:red; margin-bottom:1em;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
     <label for="id_wallet_type">Wallet type:</label>
     {{ form.wallet_type }}
-    <div class="card-fields">
-      <label for="id_card_type">Card type:</label>
-      {{ form.card_type }}
+    <div id="card-fields" style="display:none;">
       <label for="id_card_number">Card number:</label>
       {{ form.card_number }}
       <label for="id_card_holder">Card holder:</label>
@@ -77,18 +80,18 @@
       {{ form.card_expiry }}
       <label for="id_card_cvv">Card cvv:</label>
       {{ form.card_cvv }}
-      <label for="id_bank_name">Bank name:</label>
-      {{ form.bank_name }}
+      <label for="id_card_bank_name">Bank name:</label>
+      <input type="text" name="card_bank_name" id="id_card_bank_name" value="{{ form.instance.bank_name }}" />
     </div>
-    <div class="bank-fields">
+    <div id="account-fields" style="display:none;">
       <label for="id_bank_name">Bank name:</label>
       {{ form.bank_name }}
       <label for="id_account_number">Account number:</label>
       {{ form.account_number }}
-      <label for="id_card_holder">A/C Holder:</label>
-      {{ form.card_holder }}
       <label for="id_ifsc_code">IFSC code:</label>
       {{ form.ifsc_code }}
+      <label for="id_card_holder">A/C Holder:</label>
+      <input type="text" name="account_holder" id="id_account_holder" value="{{ form.card_holder.value }}" />
     </div>
     <label for="id_notes">Notes:</label>
     {{ form.notes }}
@@ -99,22 +102,12 @@
   </form>
 </div>
 <script>
-const walletType = document.getElementById('id_wallet_type');
-const cardType = document.getElementById('id_card_type');
-function toggleFields() {
-  const cardFields = document.querySelectorAll('.card-fields label, .card-fields input, .card-fields select');
-  const bankFields = document.querySelectorAll('.bank-fields label, .bank-fields input');
-  if (walletType.value === 'card') {
-    cardFields.forEach(e => e.style.display = 'block');
-    bankFields.forEach(e => e.style.display = 'none');
-  } else {
-    cardFields.forEach(e => e.style.display = 'none');
-    bankFields.forEach(e => e.style.display = 'block');
-  }
+function updateWalletFields() {
+  var walletType = document.getElementById('id_wallet_type').value;
+  document.getElementById('card-fields').style.display = (walletType === 'credit' || walletType === 'debit') ? 'block' : 'none';
+  document.getElementById('account-fields').style.display = walletType === 'account' ? 'block' : 'none';
 }
-if (walletType) {
-  walletType.addEventListener('change', toggleFields);
-  window.addEventListener('DOMContentLoaded', toggleFields);
-}
+document.getElementById('id_wallet_type').addEventListener('change', updateWalletFields);
+document.addEventListener('DOMContentLoaded', updateWalletFields);
 </script>
 {% endblock %}

@@ -132,8 +132,9 @@
     {% if user.is_authenticated %}
     <aside class="sidebar" id="sidebar">
         <div class="logo">
-            <span class="material-icons" style="color:#ffd700;">vpn_key</span>
-            <a href="{% url 'password_list' %}" style="color:inherit;text-decoration:none;">PassVault</a>
+
+            <img src="https://developerkk.in/assets/images/mylogo.png" alt="DeveloperKK Logo" style="width: 74px; height: 54px; vertical-align: middle;">
+            <a href="{% url 'password_list' %}" style="color:inherit;text-decoration:none;">KK Vault</a>
         </div>
         <nav class="nav">
             <a href="{% url 'password_list' %}" class="{% if request.resolver_match.url_name == 'password_list' %}active{% endif %}"><span class="material-icons">lock</span> Logins</a>
@@ -143,8 +144,8 @@
         </nav>
         <div class="section-title">SECURITY & PREFERENCES</div>
         <nav class="nav">
-            <a href="{% url 'import_passwords' %}"><span class="material-icons">file_upload</span> Import data to my vault</a>
-            <a href="{% url 'export_passwords' %}"><span class="material-icons">file_download</span> Export data from my vault</a>
+            <a href="{% url 'import_all_data' %}"><span class="material-icons">file_upload</span> Import data to my vault</a>
+            <a href="{% url 'export_all_data' %}"><span class="material-icons">file_download</span> Export data from my vault</a>
             <a href="#" class="disabled"><span class="material-icons">dashboard</span> Safety Dashboard</a>
         </nav>
         <div class="section-title">MORE FEATURES</div>

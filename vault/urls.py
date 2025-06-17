@@ -24,4 +24,7 @@ urlpatterns = [
     path('save-events/<int:pk>/edit/', views.save_event_edit, name='save_event_edit'),
     path('save-events/<int:pk>/delete/', views.save_event_delete, name='save_event_delete'),
     path('password-generator/', views.password_generator, name='password_generator'),
+    path('export-all/', views.export_all_data, name='export_all_data'),
+    path('import-all/', views.import_all_data, name='import_all_data'),
+    path('import-success/', views.import_success, name='import_success'),
 ]

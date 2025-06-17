@@ -44,11 +44,13 @@ class PasswordEntry(models.Model):
         return f"{self.site_name} ({self.username})"
 
 class WalletEntry(models.Model):
-    CARD = 'card'
-    BANK = 'bank'
+    ACCOUNT = 'account'
+    CREDIT = 'credit'
+    DEBIT = 'debit'
     WALLET_TYPE_CHOICES = [
-        (CARD, 'Card'),
-        (BANK, 'Bank Account'),
+        (ACCOUNT, 'Account Number'),
+        (CREDIT, 'Credit Card'),
+        (DEBIT, 'Debit Card'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     wallet_type = models.CharField(max_length=10, choices=WALLET_TYPE_CHOICES)
@@ -57,11 +59,6 @@ class WalletEntry(models.Model):
     card_holder = models.CharField(max_length=255, blank=True)
     card_expiry = models.CharField(max_length=7, blank=True)  # MM/YYYY
     card_cvv = models.CharField(max_length=4, blank=True)
-    card_type = models.CharField(
-        max_length=10,
-        choices=[('debit', 'Debit Card'), ('credit', 'Credit Card')],
-        blank=True
-    )
     # Bank account fields
     bank_name = models.CharField(max_length=255, blank=True)
     account_number = models.CharField(max_length=30, blank=True)
@@ -71,10 +68,12 @@ class WalletEntry(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        if self.wallet_type == self.CARD:
-            return f"Card: {self.card_number} ({self.card_holder})"
+        if self.wallet_type == self.CREDIT:
+            return f"Credit Card: {self.card_number} ({self.card_holder})"
+        elif self.wallet_type == self.DEBIT:
+            return f"Debit Card: {self.card_number} ({self.card_holder})"
         else:
-            return f"Bank: {self.bank_name} ({self.account_number})"
+            return f"Account: {self.bank_name} ({self.account_number})"
 
 class Note(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

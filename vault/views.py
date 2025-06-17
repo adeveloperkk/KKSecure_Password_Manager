@@ -105,6 +105,16 @@ def wallet_detail(request, pk):
 
 @login_required
 def wallet_create(request):
+    # Pre-fill form fields from GET params
+    initial = {}
+    wallet_type = request.GET.get('wallet_type') or request.GET.get('type')
+    card_type = request.GET.get('card_type')
+    if wallet_type:
+        initial['wallet_type'] = wallet_type
+        if wallet_type == 'card' and card_type:
+            initial['card_type'] = card_type
+        elif wallet_type == 'card' and request.GET.get('type') in ['credit', 'debit']:
+            initial['card_type'] = request.GET.get('type')
     if request.method == 'POST':
         form = WalletEntryForm(request.POST)
         if form.is_valid():
@@ -113,7 +123,7 @@ def wallet_create(request):
             wallet.save()
             return redirect('wallet_list')
     else:
-        form = WalletEntryForm()
+        form = WalletEntryForm(initial=initial)
     return render(request, 'vault/wallet_form.html', {'form': form})
 
 @login_required
@@ -234,3 +244,57 @@ def save_event_delete(request, pk):
 @login_required
 def password_generator(request):
     return render(request, 'vault/password_generator.html')
+
+@login_required
+def export_all_data(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="exported_credentials.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['name', 'url', 'username', 'password', 'note'])
+
+    # Export Password Entries
+    passwords = PasswordEntry.objects.filter(user=request.user)
+    for password in passwords:
+        writer.writerow([password.site_name, password.site_url, password.username, decrypt_password(password.password_encrypted), password.notes])
+
+    return response
+
+@csrf_exempt
+@login_required
+def import_all_data(request):
+    if request.method == 'POST':
+        try:
+            if 'csvfile' not in request.FILES:
+                return JsonResponse({'status': 'error', 'message': 'No file uploaded'}, status=400)
+
+            file = request.FILES['csvfile']
+            if not file.name.endswith('.csv'):
+                return JsonResponse({'status': 'error', 'message': 'Uploaded file is not a CSV file'}, status=400)
+
+            data = TextIOWrapper(file.file, encoding='utf-8')
+            reader = csv.DictReader(data)
+
+            required_columns = {'name', 'url', 'username', 'password'}
+            if not required_columns.issubset(reader.fieldnames):
+                return JsonResponse({'status': 'error', 'message': 'Invalid CSV format. Missing required columns: ' + ', '.join(required_columns - set(reader.fieldnames))}, status=400)
+
+            for row in reader:
+                PasswordEntry.objects.create(
+                    user=request.user,
+                    site_name=row['name'],
+                    site_url=row['url'],
+                    username=row['username'],
+                    password_encrypted=encrypt_password(row['password'])
+                )
+
+            return redirect('import_success')
+        except csv.Error as e:
+            return render(request, 'vault/import_all.html', {'error_message': 'CSV parsing error: ' + str(e)})
+        except Exception as e:
+            return render(request, 'vault/import_all.html', {'error_message': 'Unexpected error: ' + str(e)})
+    return render(request, 'vault/import_all.html')
+
+@login_required
+def import_success(request):
+    return render(request, 'vault/import_success.html')

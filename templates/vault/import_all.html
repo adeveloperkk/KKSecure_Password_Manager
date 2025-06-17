@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Import All Data</h1>
+<p>Upload a CSV file to import all your data.</p>
+
+<div class="boxed-ui">
+    {% if success_message %}
+        <div class="success-animation">
+            <span class="material-icons" style="color: green; font-size: 48px;">check_circle</span>
+            <p>{{ success_message }}</p>
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="csvfile" accept=".csv" required>
+        <button type="submit" class="btn btn-primary">Import Data</button>
+    </form>
+</div>
+
+<style>
+.boxed-ui {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.success-animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+</style>
+{% endblock %}

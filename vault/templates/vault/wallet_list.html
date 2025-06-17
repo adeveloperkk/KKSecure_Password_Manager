@@ -54,8 +54,8 @@
     border: 1.5px solid #ffd700;
     background: #fffbe6;
   }
-  .search-btn {
-    background: #ffd700;
+    .search-btn {
+    background: #a2a2a2;
     color: #232733;
     border: none;
     border-radius: 12px;
@@ -67,8 +67,43 @@
     transition: background 0.2s;
   }
   .search-btn:hover {
-    background: #ffe066;
+    background: #3e448f;
   }
+  /* FAB Styles */
+  #fab-menu-container {
+    position: relative;
+  }
+  #fab-menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(40, 40, 40, 0.45);
+    z-index: 1100;
+  }
+  #fab-menu {
+    display: none;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1.2em;
+    position: fixed;
+    bottom: 110px;
+    right: 40px;
+    z-index: 1200;
+  }
+  .fab-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    background: #fff;
+    color: #232733;
+    padding: 0.7em 1.3em;
+    border-radius: 30px;
+    box-shadow: 0 2px 8px #0002;
+    font-weight: 600;
+    text-decoration: none;
+    min-width: 120px;
+  }
+  /* End FAB Styles */
 </style>
 <h2 style="text-align:center;color:#444;font-size:2.2em;font-weight:700;margin-bottom:2rem;">Wallets</h2>
 <form method="get" class="search-sort-bar">
@@ -84,11 +119,11 @@
 </form>
 <div class="wallets-flex" style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:center;">
   {% for wallet in wallets %}
-    <div class="wallet-card" style="background:{% if wallet.wallet_type == 'card' %}{% if wallet.card_type == 'credit' %}#cf8108{% else %}#232733{% endif %}{% else %}#fff{% endif %};border-radius:20px;box-shadow:0 2px 16px #0002;padding:2rem 2.5rem;min-width:320px;max-width:350px;flex:1 1 320px;display:flex;flex-direction:column;align-items:flex-start;position:relative;">
-      {% if wallet.wallet_type == 'card' %}
+    <div class="wallet-card" style="background:{% if wallet.wallet_type == 'credit' or wallet.wallet_type == 'debit' %}{% if wallet.wallet_type == 'credit' %}#cf8108{% else %}#232733{% endif %}{% else %}#fff{% endif %};border-radius:20px;box-shadow:0 2px 16px #0002;padding:2rem 2.5rem;min-width:320px;max-width:350px;flex:1 1 320px;display:flex;flex-direction:column;align-items:flex-start;position:relative;">
+      {% if wallet.wallet_type == 'credit' or wallet.wallet_type == 'debit' %}
         <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-          <span style="display:inline-block;width:48px;height:32px;background:{% if wallet.card_type == 'credit' %}#f7d677{% else %}#3b7dd8{% endif %};border-radius:8px;"></span>
-          <span style="font-size:1.4em;font-weight:600;color:#fff;">{% if wallet.card_type == 'credit' %}Credit Card{% else %}Debit Card{% endif %}</span>
+          <span style="display:inline-block;width:48px;height:32px;background:{% if wallet.wallet_type == 'credit' %}#f7d677{% else %}#3b7dd8{% endif %};border-radius:8px;"></span>
+          <span style="font-size:1.4em;font-weight:600;color:#fff;">{% if wallet.wallet_type == 'credit' %}Credit Card{% else %}Debit Card{% endif %}</span>
         </div>
         <div style="font-size:1.2em;color:#fff;letter-spacing:2px;margin-bottom:0.5rem;">
           •••• {{ wallet.card_number|slice:'-4:' }}
@@ -156,7 +191,34 @@
   {% endfor %}
 </div>
 <!-- Floating circular add button for Wallet -->
-<a href="{% url 'wallet_create' %}" style="position:fixed;bottom:32px;right:32px;width:60px;height:60px;background:#202020;color:#ffd700;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:1000;text-decoration:none;transition:background 0.2s;">
-  <span class="material-icons" style="font-size:2.5em;">add</span>
-</a>
+<div id="fab-menu-container">
+  <div id="fab-menu-overlay" style="display:none;position:fixed;inset:0;background:rgba(40,40,40,0.45);z-index:1100;" onclick="toggleFabMenu(false)"></div>
+  <div id="fab-menu" style="display:none;flex-direction:column;align-items:flex-end;gap:1.2em;position:fixed;bottom:110px;right:40px;z-index:1200;">
+    <a href="{% url 'wallet_create' %}?type=account" class="fab-menu-item" style="display:flex;align-items:center;gap:0.7em;background:#fff;color:#232733;padding:0.7em 1.3em;border-radius:30px;box-shadow:0 2px 8px #0002;font-weight:600;text-decoration:none;min-width:120px;">
+      <span style="background:#fff;border:2px solid #232733;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><span class="material-icons">account_balance</span></span>
+      Account
+    </a>
+    <a href="{% url 'wallet_create' %}?type=debit" class="fab-menu-item" style="display:flex;align-items:center;gap:0.7em;background:#fff;color:#232733;padding:0.7em 1.3em;border-radius:30px;box-shadow:0 2px 8px #0002;font-weight:600;text-decoration:none;min-width:120px;">
+      <span style="background:#fff;border:2px solid #232733;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><span class="material-icons">credit_card</span></span>
+      Debit Card
+    </a>
+    <a href="{% url 'wallet_create' %}?type=credit" class="fab-menu-item" style="display:flex;align-items:center;gap:0.7em;background:#fff;color:#cf8108;padding:0.7em 1.3em;border-radius:30px;box-shadow:0 2px 8px #0002;font-weight:600;text-decoration:none;min-width:120px;">
+      <span style="background:#ffd700;border:2px solid #cf8108;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><span class="material-icons">credit_card</span></span>
+      Credit Card
+    </a>
+    <button onclick="toggleFabMenu(false)" style="margin-top:0.7em;width:48px;height:48px;background:#ffd700;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #0002;cursor:pointer;outline:none;">
+      <span class="material-icons" style="color:#232733;font-size:2em;">close</span>
+    </button>
+  </div>
+  <button id="fab-btn" onclick="toggleFabMenu(true)" style="position:fixed;bottom:32px;right:32px;width:60px;height:60px;background:#202020;color:#ffd700;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:1300;border:none;cursor:pointer;transition:background 0.2s;">
+    <span class="material-icons" style="font-size:2.5em;">add</span>
+  </button>
+</div>
+<script>
+function toggleFabMenu(show) {
+  document.getElementById('fab-menu').style.display = show ? 'flex' : 'none';
+  document.getElementById('fab-menu-overlay').style.display = show ? 'block' : 'none';
+  document.getElementById('fab-btn').style.display = show ? 'none' : 'flex';
+}
+</script>
 {% endblock %}

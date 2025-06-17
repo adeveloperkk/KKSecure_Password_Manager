@@ -1,19 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="max-width:900px;margin:2.5rem auto;padding:2.5rem 2rem;background:{% if wallet.wallet_type == 'card' %}{% if wallet.card_type == 'credit' %}#d48806{% else %}#232733{% endif %}{% else %}#fff{% endif %};border-radius:24px;box-shadow:0 2px 16px #0002;position:relative;">
-  <h2 style="text-align:center;margin-bottom:2rem;color:{% if wallet.wallet_type == 'card' %}#fff{% else %}#232733{% endif %};">
-    {% if wallet.wallet_type == 'card' %}{% if wallet.card_type == 'credit' %}Credit Card{% else %}Debit Card{% endif %}{% else %}Bank Account{% endif %}
+<div style="max-width:900px;margin:2.5rem auto;padding:2.5rem 2rem;background:{% if wallet.wallet_type == 'credit' or wallet.wallet_type == 'debit' %}{% if wallet.wallet_type == 'credit' %}#d48806{% else %}#232733{% endif %}{% else %}#fff{% endif %};border-radius:24px;box-shadow:0 2px 16px #0002;position:relative;">
+  <h2 style="text-align:center;margin-bottom:2rem;color:{% if wallet.wallet_type == 'credit' or wallet.wallet_type == 'debit' %}#fff{% else %}#232733{% endif %};">
+    {% if wallet.wallet_type == 'credit' %}Credit Card{% elif wallet.wallet_type == 'debit' %}Debit Card{% else %}Bank Account{% endif %}
   </h2>
   <div style="margin-bottom:1.2em;">
     <strong style="color:#ffd700;">Type:</strong> {{ wallet.get_wallet_type_display }}
   </div>
-  {% if wallet.wallet_type == 'card' %}
+  {% if wallet.wallet_type == 'credit' or wallet.wallet_type == 'debit' %}
     <div style="margin-bottom:1em;color:#fff;font-size:1.2em;display:flex;align-items:center;gap:0.5em;">Card Number: <span id="cardNumber">{{ wallet.card_number }}</span>
       <span onclick="copyToClipboard('cardNumber')" title="Copy card number" style="cursor:pointer;display:inline-flex;align-items:center;margin-left:0.3em;">
         <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24'><rect x='7' y='7' width='10' height='14' rx='2' fill='#ffd700'/><rect x='3' y='3' width='10' height='14' rx='2' stroke='#ffd700' stroke-width='2' fill='none'/></svg>
       </span>
     </div>
-    <div style="margin-bottom:1em;color:#fff;">Card Type: {{ wallet.get_card_type_display }}</div>
     <div style="margin-bottom:1em;color:#fff;">Expiry: {{ wallet.card_expiry }}</div>
     <div style="margin-bottom:1em;color:#fff;display:flex;align-items:center;gap:0.5em;">Holder: <span id="holderName">{{ wallet.card_holder }}</span>
       <span onclick="copyToClipboard('holderName')" title="Copy holder name" style="cursor:pointer;display:inline-flex;align-items:center;margin-left:0.3em;">

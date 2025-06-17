@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="boxed-ui" style="margin-top: 60px; text-align: center;">
+    {% if error_message %}
+        <div class="error-animation">
+            <span class="material-icons" style="color: red; font-size: 72px;">error</span>
+            <h2>Import Failed</h2>
+            <p>{{ error_message }}</p>
+            <a href="{% url 'import_all_data' %}" class="btn btn-primary" style="margin-top: 20px;">Try Again</a>
+        </div>
+    {% else %}
+        <div class="success-animation">
+            <span class="material-icons" style="color: green; font-size: 72px;">check_circle</span>
+            <h2>Passwords Imported Successfully!</h2>
+            <p>Your passwords have been imported. You can now view them in your vault.</p>
+            <a href="{% url 'password_list' %}" class="btn btn-primary" style="margin-top: 20px;">Go to Vault</a>
+        </div>
+    {% endif %}
+</div>
+<style>
+.boxed-ui {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.success-animation, .error-animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    animation: fadeIn 1s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+</style>
+{% endblock %}
