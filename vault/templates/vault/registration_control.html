@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width:500px;margin:2.5rem auto;padding:2.5rem 2rem;background:#fff;border-radius:18px;box-shadow:0 2px 16px #0002;">
+  <h2 style="text-align:center;margin-bottom:2rem;">User Registration Control</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div style="display:flex;align-items:center;gap:1em;justify-content:center;">
+      <label for="id_enabled" style="font-size:1.1em;font-weight:600;">Enable User Registration</label>
+      <input type="checkbox" id="id_enabled" name="enabled" {% if enabled %}checked{% endif %} style="width:22px;height:22px;">
+    </div>
+    <button type="submit" style="margin-top:2em;width:100%;background:#ffd700;color:#232733;padding:0.8em 0;border:none;border-radius:8px;font-weight:700;font-size:1.1em;">Save</button>
+  </form>
+  {% if saved %}
+    <div style="margin-top:1.2em;color:green;text-align:center;">Saved successfully!</div>
+  {% endif %}
+</div>
+{% endblock %}

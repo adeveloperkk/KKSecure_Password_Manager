@@ -27,4 +27,6 @@ urlpatterns = [
     path('export-all/', views.export_all_data, name='export_all_data'),
     path('import-all/', views.import_all_data, name='import_all_data'),
     path('import-success/', views.import_success, name='import_success'),
+    path('register/', views.user_register, name='register'),
+    path('registration-control/', views.registration_control, name='registration_control'),
 ]

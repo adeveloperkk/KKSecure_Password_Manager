@@ -50,7 +50,7 @@
 function copyToClipboard(elementId) {
   var text = document.getElementById(elementId).innerText;
   navigator.clipboard.writeText(text).then(function() {
-    alert('Copied!');
+    showSnackbar('Copied!');
   });
 }
 </script>

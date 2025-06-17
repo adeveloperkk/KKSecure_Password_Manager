@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import PasswordEntry, encrypt_password, decrypt_password, WalletEntry, Note, SaveEvent
+from .models import PasswordEntry, encrypt_password, decrypt_password, WalletEntry, Note, SaveEvent, RegistrationControl
 from .forms import WalletEntryForm, NoteForm
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +9,8 @@ from io import TextIOWrapper
 import random
 import string
 from django.db.models import Q
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.admin.views.decorators import staff_member_required
 
 @login_required
 def password_list(request):
@@ -298,3 +300,26 @@ def import_all_data(request):
 @login_required
 def import_success(request):
     return render(request, 'vault/import_success.html')
+
+def user_register(request):
+    reg_control = RegistrationControl.objects.first()
+    if reg_control and not reg_control.enabled:
+        return render(request, 'registration/registration_disabled.html')
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+@staff_member_required
+def registration_control(request):
+    reg_control, _ = RegistrationControl.objects.get_or_create(pk=1)
+    saved = False
+    if request.method == 'POST':
+        reg_control.enabled = bool(request.POST.get('enabled'))
+        reg_control.save()
+        saved = True
+    return render(request, 'vault/registration_control.html', {'enabled': reg_control.enabled, 'saved': saved})

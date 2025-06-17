@@ -126,6 +126,31 @@
             cursor: pointer;
         }
     </style>
+    <style>
+    /* Snackbar styles */
+    #snackbar {
+      visibility: hidden;
+      min-width: 220px;
+      background-color: #323232;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 16px 24px;
+      position: fixed;
+      left: 50%;
+      bottom: 40px;
+      font-size: 1rem;
+      z-index: 9999;
+      transform: translateX(-50%);
+      box-shadow: 0 4px 16px #0003;
+      opacity: 0;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    #snackbar.show {
+      visibility: visible;
+      opacity: 1;
+    }
+    </style>
 </head>
 <body>
 <div class="main-layout">
@@ -152,6 +177,12 @@
         <nav class="nav">
             <a href="{% url 'password_generator' %}" class="{% if request.resolver_match.url_name == 'password_generator' %}active{% endif %}"><span class="material-icons">password</span> Password Generator</a>
         </nav>
+        {% if user.is_superuser %}
+        <div class="section-title">ADMIN</div>
+        <nav class="nav">
+            <a href="{% url 'registration_control' %}"><span class="material-icons">manage_accounts</span> User Registration Control</a>
+        </nav>
+        {% endif %}
     </aside>
     {% endif %}
     <main class="main-content">
@@ -170,6 +201,7 @@
         {% block content %}{% endblock %}
     </main>
 </div>
+<div id="snackbar"></div>
 <script>
   // Sidebar toggle for mobile
   const menuBtn = document.getElementById('menuBtn');
@@ -186,6 +218,16 @@
         }
       }
     });
+  }
+
+  // Snackbar logic
+  function showSnackbar(message) {
+    const snackbar = document.getElementById('snackbar');
+    snackbar.textContent = message;
+    snackbar.className = 'show';
+    setTimeout(function() {
+      snackbar.className = snackbar.className.replace('show', '');
+    }, 2200);
   }
 </script>
 </body>

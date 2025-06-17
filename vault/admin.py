@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.sessions.models import Session
 from django.utils.html import format_html
 from django.contrib.auth.models import User
-from .models import PasswordEntry, WalletEntry, Note, SaveEvent, SystemLog
+from .models import PasswordEntry, WalletEntry, Note, SaveEvent, SystemLog, RegistrationControl
 from django.urls import path
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -154,4 +154,11 @@ class SystemLogAdmin(admin.ModelAdmin):
     search_fields = ('admin_user__username', 'action', 'object_type', 'object_id', 'session_key', 'details')
     list_filter = ('action', 'object_type', 'admin_user', 'timestamp')
     readonly_fields = ('timestamp',)
+
+@admin.register(RegistrationControl)
+class RegistrationControlAdmin(admin.ModelAdmin):
+    list_display = ('enabled', 'updated_at')
+    list_display_links = ('updated_at',)
+    list_editable = ('enabled',)
+    readonly_fields = ('updated_at',)
 

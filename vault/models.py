@@ -119,3 +119,10 @@ class SystemLog(models.Model):
 
     def __str__(self):
         return f"{self.admin_user} {self.action} {self.object_type} {self.object_id} at {self.timestamp}"
+
+class RegistrationControl(models.Model):
+    enabled = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Registration Enabled: {self.enabled}"
