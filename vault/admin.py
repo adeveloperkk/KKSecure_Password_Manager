@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.sessions.models import Session
 from django.utils.html import format_html
 from django.contrib.auth.models import User
-from .models import PasswordEntry, WalletEntry, Note, SaveEvent, SystemLog, RegistrationControl
+from .models import PasswordEntry, WalletEntry, Note, SaveEvent, SystemLog, RegistrationControl, decrypt_password
 from django.urls import path
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -13,7 +13,7 @@ class PasswordEntryAdmin(admin.ModelAdmin):
     list_display = ('site_name', 'site_url', 'username', 'notes', 'created_at', 'updated_at', 'user')
     search_fields = ('site_name', 'site_url', 'username', 'notes', 'user__username')
     list_filter = ('site_name', 'user', 'created_at', 'updated_at')
-    readonly_fields = ('created_at', 'updated_at', 'user')
+    readonly_fields = ('created_at', 'updated_at', 'user', 'decrypted_password')
     exclude = ('password_encrypted',)
 
     def get_queryset(self, request):
@@ -21,6 +21,20 @@ class PasswordEntryAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(user=request.user)
+
+    def decrypted_password(self, obj):
+        try:
+            return decrypt_password(obj.password_encrypted)
+        except Exception:
+            return '(decryption error)'
+    decrypted_password.short_description = 'Decrypted Password'
+
+    def get_readonly_fields(self, request, obj=None):
+        fields = list(super().get_readonly_fields(request, obj))
+        if not request.user.is_superuser:
+            if 'decrypted_password' in fields:
+                fields.remove('decrypted_password')
+        return fields
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
