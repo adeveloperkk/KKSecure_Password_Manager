@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width:420px;margin:2.5rem auto;padding:2.5rem 2rem;background:#fff;border-radius:24px;box-shadow:0 2px 16px #0002;">
+  <h2 style="text-align:center;margin-bottom:2rem;color:#232733;">{% if edit %}Edit{% else %}Add{% endif %} Save Event</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label for="id_title" style="font-weight:600;color:#232733;">Title:</label>
+    <input type="text" name="title" id="id_title" value="{{ event.title|default:'' }}" required style="width:100%;padding:0.7em 1em;border-radius:10px;border:1.5px solid #ececec;margin-bottom:1.2em;font-size:1.08em;background:#fafbfc;color:#232733;">
+    <label for="id_event_date" style="font-weight:600;color:#232733;">Date:</label>
+    <input type="date" name="event_date" id="id_event_date" value="{{ event.event_date|date:'Y-m-d'|default:'' }}" required style="width:100%;padding:0.7em 1em;border-radius:10px;border:1.5px solid #ececec;margin-bottom:1.2em;font-size:1.08em;background:#fafbfc;color:#232733;">
+    <label for="id_description" style="font-weight:600;color:#232733;">Description:</label>
+    <textarea name="description" id="id_description" rows="4" style="width:100%;padding:0.7em 1em;border-radius:10px;border:1.5px solid #ececec;margin-bottom:1.2em;font-size:1.08em;background:#fafbfc;color:#232733;">{{ event.description|default:'' }}</textarea>
+    <div style="display:flex;gap:1.2em;justify-content:center;margin-top:1.5em;">
+      <button type="submit" style="background:#ffd700;color:#232733;border:none;border-radius:2em;font-size:1.1em;font-weight:600;padding:0.7em 2.2em;cursor:pointer;">Save</button>
+      <a href="{% url 'save_event_list' %}" style="background:#ececec;color:#232733;border-radius:2em;font-size:1.1em;font-weight:600;padding:0.7em 2.2em;text-decoration:none;">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

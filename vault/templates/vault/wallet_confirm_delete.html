@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width:400px;margin:3em auto;padding:2em 2em 1.5em 2em;background:#fff;border-radius:16px;box-shadow:0 2px 16px #0002;text-align:center;">
+  <h2 style="color:#ff5252;margin-bottom:1em;">Delete Wallet Entry</h2>
+  <p style="margin-bottom:2em;font-size:1.1em;">Are you sure you want to delete <strong>{{ wallet }}</strong>? This action cannot be undone.</p>
+  <form method="post" style="display:flex;flex-direction:column;gap:1.2em;">
+    {% csrf_token %}
+    <button type="submit" style="background:#ff5252;color:#fff;padding:0.7em 2em;border:none;border-radius:10px;font-weight:600;font-size:1.1em;cursor:pointer;">Yes, Delete</button>
+    <a href="{% url 'wallet_detail' wallet.pk %}" style="background:#ececec;color:#232733;padding:0.7em 2em;border-radius:10px;font-weight:600;text-decoration:none;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

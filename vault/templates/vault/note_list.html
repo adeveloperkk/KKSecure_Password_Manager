@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .search-sort-bar {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.2rem;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .search-input {
+    flex: 2;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #232733;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .search-input:focus {
+    border: 1.5px solid #ffd700;
+    background: #fffbe6;
+  }
+  .sort-select {
+    flex: 1;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #232733;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .sort-select:focus {
+    border: 1.5px solid #ffd700;
+    background: #fffbe6;
+  }
+  .search-btn {
+    background: #ffd700;
+    color: #232733;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8em 2.2em;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #0001;
+    transition: background 0.2s;
+  }
+  .search-btn:hover {
+    background: #ffe066;
+  }
+  @media (max-width: 700px) {
+    .search-sort-bar {
+      flex-direction: column !important;
+      gap: 0.7rem !important;
+      align-items: stretch !important;
+    }
+  }
+</style>
+<div style="max-width:1100px;margin:2rem auto;padding:2rem;background: #fff;border-radius:24px;box-shadow:0 2px 16px #0002;">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <h2 style="margin-bottom:0.2em;color:#232733;">Notes</h2>
+      <div style="color:#666;font-size:1.1em;">{{ note_count }} note{{ note_count|pluralize }}</div>
+    </div>
+    <form method="get" class="search-sort-bar" style="margin-bottom:0;">
+      <input type="text" name="q" class="search-input" placeholder="Search for a note" value="{{ query|default:'' }}">
+      <select name="filter_by" class="sort-select">
+        <option value="">Sort by</option>
+        <option value="recent" {% if filter_by == 'recent' %}selected{% endif %}>Most Recent</option>
+        <option value="title" {% if filter_by == 'title' %}selected{% endif %}>Title</option>
+        <option value="updated" {% if filter_by == 'updated' %}selected{% endif %}>Last Modified</option>
+      </select>
+      <button type="submit" class="search-btn"><span class="material-icons" style="vertical-align:middle;font-size:1.1em;">search</span></button>
+    </form>
+  </div>
+  <table style="width:100%;margin-top:2em;">
+    <thead>
+      <tr style="color:#232733;font-size:1.1em;background:#f7f7f7;">
+        <th style="text-align:left;">Title</th>
+        <th style="text-align:left;">Notes</th>
+        <th style="text-align:left;">Last Modified</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for note in notes %}
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:0.7em 0.5em;font-weight:600;">{{ note.title }}</td>
+        <td style="padding:0.7em 0.5em;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          <span>{{ note.content|safe|truncatechars_html:80 }}</span>
+        </td>
+        <td style="padding:0.7em 0.5em;">{{ note.updated_at|date:'F j, Y, g:i a' }}</td>
+        <td style="padding:0.7em 0.5em;">
+          <a href="{% url 'note_detail' note.pk %}" title="View"><span class="material-icons" style="color:#ffd700;">visibility</span></a>
+          <a href="{% url 'note_edit' note.pk %}" title="Edit"><span class="material-icons" style="color:#ffd700;">edit</span></a>
+          <a href="{% url 'note_delete' note.pk %}" title="Delete"><span class="material-icons" style="color:#ffd700;">delete</span></a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" style="text-align:center;color:#aaa;padding:2rem;">No notes found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<!-- Floating circular add button for Notes -->
+<a href="{% url 'note_create' %}" style="position:fixed;bottom:32px;right:32px;width:60px;height:60px;background:#202020;color:#00e6e6;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:1000;text-decoration:none;transition:background 0.2s;">
+  <span class="material-icons" style="font-size:2.5em;">add</span>
+</a>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import PasswordEntry, encrypt_password, decrypt_password
+from .models import PasswordEntry, encrypt_password, decrypt_password, WalletEntry, Note, SaveEvent
+from .forms import WalletEntryForm, NoteForm
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import csv
@@ -93,35 +94,143 @@ def generate_password(request):
     return JsonResponse({'password': password})
 
 @login_required
-def import_passwords(request):
-    if request.method == 'POST' and request.FILES.get('csvfile'):
-        csvfile = TextIOWrapper(request.FILES['csvfile'].file, encoding='utf-8')
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            PasswordEntry.objects.create(
-                user=request.user,
-                site_name=row.get('site_name', ''),
-                site_url=row.get('site_url', ''),
-                username=row.get('username', ''),
-                password_encrypted=encrypt_password(row.get('password', '')),
-                notes=row.get('notes', '')
-            )
-        return redirect('password_list')
-    return render(request, 'vault/import_passwords.html')
+def wallet_list(request):
+    wallets = WalletEntry.objects.filter(user=request.user)
+    return render(request, 'vault/wallet_list.html', {'wallets': wallets})
 
 @login_required
-def export_passwords(request):
-    passwords = PasswordEntry.objects.filter(user=request.user)
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="passwords_export.csv"'
-    writer = csv.writer(response)
-    writer.writerow(['site_name', 'site_url', 'username', 'password', 'notes'])
-    for entry in passwords:
-        writer.writerow([
-            entry.site_name,
-            entry.site_url,
-            entry.username,
-            decrypt_password(entry.password_encrypted),
-            entry.notes
-        ])
-    return response
+def wallet_detail(request, pk):
+    wallet = get_object_or_404(WalletEntry, pk=pk, user=request.user)
+    return render(request, 'vault/wallet_detail.html', {'wallet': wallet})
+
+@login_required
+def wallet_create(request):
+    if request.method == 'POST':
+        form = WalletEntryForm(request.POST)
+        if form.is_valid():
+            wallet = form.save(commit=False)
+            wallet.user = request.user
+            wallet.save()
+            return redirect('wallet_list')
+    else:
+        form = WalletEntryForm()
+    return render(request, 'vault/wallet_form.html', {'form': form})
+
+@login_required
+def wallet_edit(request, pk):
+    wallet = get_object_or_404(WalletEntry, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = WalletEntryForm(request.POST, instance=wallet)
+        if form.is_valid():
+            form.save()
+            return redirect('wallet_detail', pk=wallet.pk)
+    else:
+        form = WalletEntryForm(instance=wallet)
+    return render(request, 'vault/wallet_form.html', {'form': form})
+
+@login_required
+def wallet_delete(request, pk):
+    wallet = get_object_or_404(WalletEntry, pk=pk, user=request.user)
+    if request.method == 'POST':
+        wallet.delete()
+        return redirect('wallet_list')
+    return render(request, 'vault/wallet_confirm_delete.html', {'wallet': wallet})
+
+@login_required
+def note_list(request):
+    query = request.GET.get('q', '')
+    notes = Note.objects.filter(user=request.user)
+    if query:
+        notes = notes.filter(title__icontains=query)
+    notes = notes.order_by('title')
+    return render(request, 'vault/note_list.html', {
+        'notes': notes,
+        'query': query,
+        'note_count': notes.count(),
+    })
+
+@login_required
+def note_create(request):
+    if request.method == 'POST':
+        form = NoteForm(request.POST)
+        if form.is_valid():
+            note = form.save(commit=False)
+            note.user = request.user
+            note.save()
+            return redirect('note_list')
+    else:
+        form = NoteForm()
+    return render(request, 'vault/note_form.html', {'form': form})
+
+@login_required
+def note_edit(request, pk):
+    note = get_object_or_404(Note, pk=pk, user=request.user)
+    if request.method == 'POST':
+        form = NoteForm(request.POST, instance=note)
+        if form.is_valid():
+            form.save()
+            return redirect('note_list')
+    else:
+        form = NoteForm(instance=note)
+    return render(request, 'vault/note_form.html', {'form': form, 'edit': True})
+
+@login_required
+def note_delete(request, pk):
+    note = get_object_or_404(Note, pk=pk, user=request.user)
+    if request.method == 'POST':
+        note.delete()
+        return redirect('note_list')
+    return render(request, 'vault/note_confirm_delete.html', {'note': note})
+
+@login_required
+def note_detail(request, pk):
+    note = get_object_or_404(Note, pk=pk, user=request.user)
+    return render(request, 'vault/note_detail.html', {'note': note})
+
+@login_required
+def save_event_list(request):
+    events = SaveEvent.objects.filter(user=request.user).order_by('-event_date')
+    return render(request, 'vault/save_event_list.html', {'events': events})
+
+@login_required
+def save_event_detail(request, pk):
+    event = get_object_or_404(SaveEvent, pk=pk, user=request.user)
+    return render(request, 'vault/save_event_detail.html', {'event': event})
+
+@login_required
+def save_event_create(request):
+    if request.method == 'POST':
+        title = request.POST['title']
+        description = request.POST.get('description', '')
+        event_date = request.POST['event_date']
+        SaveEvent.objects.create(
+            user=request.user,
+            title=title,
+            description=description,
+            event_date=event_date
+        )
+        return redirect('save_event_list')
+    return render(request, 'vault/save_event_form.html')
+
+@login_required
+def save_event_edit(request, pk):
+    event = get_object_or_404(SaveEvent, pk=pk, user=request.user)
+    if request.method == 'POST':
+        event.title = request.POST['title']
+        event.description = request.POST.get('description', '')
+        event.event_date = request.POST['event_date']
+        event.save()
+        return redirect('save_event_list')
+    return render(request, 'vault/save_event_form.html', {'event': event, 'edit': True})
+
+@login_required
+def save_event_delete(request, pk):
+    event = get_object_or_404(SaveEvent, pk=pk, user=request.user)
+    if request.method == 'POST':
+        event.delete()
+        return redirect('save_event_list')
+    return render(request, 'vault/save_event_confirm_delete.html', {'event': event})
+
+@login_required
+def password_generator(request):
+    return render(request, 'vault/password_generator.html')

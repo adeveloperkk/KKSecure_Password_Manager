@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  @media (max-width: 700px) {
+    .wallets-flex {
+      flex-direction: column;
+      gap: 1.2rem;
+      align-items: center;
+    }
+    .wallet-card {
+      min-width: 90vw !important;
+      max-width: 98vw !important;
+      padding: 1.2rem 1rem !important;
+    }
+  }
+  .search-sort-bar {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.2rem;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .search-input {
+    flex: 2;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #232733;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .search-input:focus {
+    border: 1.5px solid #ffd700;
+    background: #fffbe6;
+  }
+  .sort-select {
+    flex: 1;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #232733;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .sort-select:focus {
+    border: 1.5px solid #ffd700;
+    background: #fffbe6;
+  }
+  .search-btn {
+    background: #ffd700;
+    color: #232733;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8em 2.2em;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #0001;
+    transition: background 0.2s;
+  }
+  .search-btn:hover {
+    background: #ffe066;
+  }
+</style>
+<h2 style="text-align:center;color:#444;font-size:2.2em;font-weight:700;margin-bottom:2rem;">Wallets</h2>
+<form method="get" class="search-sort-bar">
+  <input type="text" name="q" class="search-input" placeholder="Search wallets..." value="{{ query|default:'' }}">
+  <select name="filter_by" class="sort-select">
+    <option value="">Sort by</option>
+    <option value="recent" {% if filter_by == 'recent' %}selected{% endif %}>Most Recent</option>
+    <option value="type" {% if filter_by == 'type' %}selected{% endif %}>Type</option>
+    <option value="holder" {% if filter_by == 'holder' %}selected{% endif %}>Holder/Bank</option>
+    <option value="created" {% if filter_by == 'created' %}selected{% endif %}>Created</option>
+  </select>
+  <button type="submit" class="search-btn">Search</button>
+</form>
+<div class="wallets-flex" style="display:flex;flex-wrap:wrap;gap:2rem;justify-content:center;">
+  {% for wallet in wallets %}
+    <div class="wallet-card" style="background:{% if wallet.wallet_type == 'card' %}{% if wallet.card_type == 'credit' %}#cf8108{% else %}#232733{% endif %}{% else %}#fff{% endif %};border-radius:20px;box-shadow:0 2px 16px #0002;padding:2rem 2.5rem;min-width:320px;max-width:350px;flex:1 1 320px;display:flex;flex-direction:column;align-items:flex-start;position:relative;">
+      {% if wallet.wallet_type == 'card' %}
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+          <span style="display:inline-block;width:48px;height:32px;background:{% if wallet.card_type == 'credit' %}#f7d677{% else %}#3b7dd8{% endif %};border-radius:8px;"></span>
+          <span style="font-size:1.4em;font-weight:600;color:#fff;">{% if wallet.card_type == 'credit' %}Credit Card{% else %}Debit Card{% endif %}</span>
+        </div>
+        <div style="font-size:1.2em;color:#fff;letter-spacing:2px;margin-bottom:0.5rem;">
+          •••• {{ wallet.card_number|slice:'-4:' }}
+          <span onclick="copyWalletNumber('{{ wallet.pk }}', 'card', this)" title="Copy card number" style="cursor:pointer;margin-left:0.7em;display:inline-flex;align-items:center;">
+            <svg class="copy-icon" xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24'><rect x='7' y='7' width='10' height='14' rx='2' fill='#ffd700'/><rect x='3' y='3' width='10' height='14' rx='2' stroke='#ffd700' stroke-width='2' fill='none'/></svg>
+            <svg class="tick-icon" xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24' style="display:none;"><circle cx="12" cy="12" r="10" fill="#2ecc40"/><path d="M7 13l3 3 6-6" stroke="#fff" stroke-width="2" fill="none"/></svg>
+          </span>
+          <span style="margin-left:1.5em;font-size:0.95em;">{{ wallet.card_expiry }}</span>
+        </div>
+        <div style="color:#fff;font-weight:500;">{{ wallet.card_holder }}</div>
+        <div style="color:#bbb;font-size:1em;margin-bottom:1.2em;">{{ wallet.bank_name }}</div>
+        <a href="{% url 'wallet_detail' wallet.pk %}" style="margin-top:auto;align-self:flex-end;background:#2979ff;color:#fff;padding:0.5em 1.5em;border-radius:8px;font-weight:600;text-decoration:none;font-size:1.1em;">View</a>
+      {% else %}
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+          <span style="display:inline-block;width:48px;height:32px;background:#ffd700;border-radius:8px;"></span>
+          <span style="font-size:1.4em;font-weight:600;color:#232733;">Bank Account</span>
+        </div>
+        <div style="font-size:1.2em;color:#232733;letter-spacing:2px;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5em;">
+          •••• {{ wallet.account_number|slice:'-4:' }}
+          <span onclick="copyWalletNumber('{{ wallet.pk }}', 'account', this)" title="Copy account number" style="cursor:pointer;margin-left:0.7em;display:inline-flex;align-items:center;">
+            <svg class="copy-icon" xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24'><rect x='7' y='7' width='10' height='14' rx='2' fill='#ffd700'/><rect x='3' y='3' width='10' height='14' rx='2' stroke='#ffd700' stroke-width='2' fill='none'/></svg>
+            <svg class="tick-icon" xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' viewBox='0 0 24 24' style="display:none;"><circle cx="12" cy="12" r="10" fill="#2ecc40"/><path d="M7 13l3 3 6-6" stroke="#fff" stroke-width="2" fill="none"/></svg>
+          </span>
+        </div>
+        <div style="color:#232733;font-weight:500;">{{ wallet.bank_name }}</div>
+        <div style="color:#888;font-size:1em;margin-bottom:1.2em;">A/C Holder: {{ wallet.card_holder }}</div>
+        <a href="{% url 'wallet_detail' wallet.pk %}" style="margin-top:auto;align-self:flex-end;background:#2979ff;color:#fff;padding:0.5em 1.5em;border-radius:8px;font-weight:600;text-decoration:none;font-size:1.1em;">View</a>
+      {% endif %}
+      <div style="position:absolute;top:1.2em;right:1.5em;color:#ffd700;font-size:0.95em;">{{ wallet.created_at|date:'M j, Y' }}</div>
+      <div style="display:flex;gap:0.7em;margin-top:1.2em;">
+        <a href="{% url 'wallet_edit' wallet.pk %}" style="background:#ffd700;color:#232733;padding:0.4em 1.1em;border-radius:8px;font-weight:600;text-decoration:none;">Edit</a>
+        <a href="{% url 'wallet_delete' wallet.pk %}" style="background:#ff5252;color:#fff;padding:0.4em 1.1em;border-radius:8px;font-weight:600;text-decoration:none;">Delete</a>
+      </div>
+      <script>
+        function copyWalletNumber(pk, type, el) {
+          var elId = type === 'card' ? 'cardNumber-' + pk : 'accountNumber-' + pk;
+          var numEl = document.getElementById(elId);
+          if (numEl) {
+            navigator.clipboard.writeText(numEl.innerText).then(function() {
+              // Show tick, hide copy icon
+              var copyIcon = el.querySelector('.copy-icon');
+              var tickIcon = el.querySelector('.tick-icon');
+              if (copyIcon && tickIcon) {
+                copyIcon.style.display = 'none';
+                tickIcon.style.display = 'inline';
+                setTimeout(function() {
+                  copyIcon.style.display = 'inline';
+                  tickIcon.style.display = 'none';
+                }, 1200);
+              }
+            });
+          }
+        }
+      </script>
+      <!-- Add id to numbers for copy -->
+      {% if wallet.wallet_type == 'card' %}
+        <span id="cardNumber-{{ wallet.pk }}" style="display:none;">{{ wallet.card_number }}</span>
+      {% else %}
+        <span id="accountNumber-{{ wallet.pk }}" style="display:none;">{{ wallet.account_number }}</span>
+      {% endif %}
+      <!-- End copy helpers -->
+    </div>
+  {% empty %}
+    <div style="color:#aaa;text-align:center;width:100%;padding:2rem;">No wallet entries found.</div>
+  {% endfor %}
+</div>
+<!-- Floating circular add button for Wallet -->
+<a href="{% url 'wallet_create' %}" style="position:fixed;bottom:32px;right:32px;width:60px;height:60px;background:#202020;color:#ffd700;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:1000;text-decoration:none;transition:background 0.2s;">
+  <span class="material-icons" style="font-size:2.5em;">add</span>
+</a>
+{% endblock %}

@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 import dj_database_url
 
 # Load environment variables from .env file
-load_dotenv(os.path.join(os.path.dirname(__file__), '../../.env'))
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'vault',
+    'vault.apps.VaultConfig',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'vault.middleware.SaveIpAddressMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -80,9 +81,18 @@ WSGI_APPLICATION = 'Passwordmanager.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
 DATABASES = {
-    'default': dj_database_url.config(default=os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR}/db.sqlite3'))
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+database_url=os.environ.get("DATABASE_URL")
+DATABASES['default']=dj_database_url.parse(database_url)
 
 
 # Password validation
@@ -119,9 +129,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+#Added Manually
+'''STATIC_URL = '/static/'
+#Added Manually
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    '/var/www/static/',
+]'''
 
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+STATICFILES_DIRS = [ BASE_DIR / "static" ]  # Optional
+STATIC_ROOT = BASE_DIR / "staticfiles"      # For collectstatic
+MEDIA_ROOT = BASE_DIR / "media"             # For media uploads
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -133,3 +154,4 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 LOGIN_REDIRECT_URL = '/vault/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

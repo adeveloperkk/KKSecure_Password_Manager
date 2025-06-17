@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Import Wallets</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="csvfile" accept=".csv" required>
+    <button type="submit">Import</button>
+</form>
+{% endblock %}

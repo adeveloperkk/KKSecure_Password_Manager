@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.wallet-form-container {
+  max-width: 480px;
+  margin: 2.5rem auto;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 2px 16px #0002;
+  padding: 2.5rem 2rem 2rem 2rem;
+}
+.wallet-form-container h2 {
+  text-align: center;
+  color: #444;
+  font-size: 2em;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+.wallet-form label {
+  font-weight: 600;
+  color: #232733;
+  margin-bottom: 0.3em;
+  display: block;
+}
+.wallet-form input, .wallet-form select, .wallet-form textarea {
+  width: 100%;
+  padding: 0.7em 1em;
+  border-radius: 10px;
+  border: 1.5px solid #ececec;
+  margin-bottom: 1.2em;
+  font-size: 1.08em;
+  background: #fafbfc;
+  color: #232733;
+  outline: none;
+  transition: border 0.2s;
+}
+.wallet-form input:focus, .wallet-form select:focus, .wallet-form textarea:focus {
+  border: 1.5px solid #ffd700;
+  background: #fffbe6;
+}
+.wallet-form .form-actions {
+  display: flex;
+  gap: 1.2em;
+  justify-content: center;
+  margin-top: 1.5em;
+}
+.wallet-form .btn {
+  background: #202020;
+  color: #ffd700;
+  border: none;
+  border-radius: 2em;
+  font-size: 1.1em;
+  font-weight: 600;
+  padding: 0.7em 2.2em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.wallet-form .btn:hover {
+  background: #ffd700;
+  color: #232733;
+}
+</style>
+<div class="wallet-form-container">
+  <h2>{% if form.instance.pk %}Edit Wallet Entry{% else %}Add Wallet Entry{% endif %}</h2>
+  <form method="post" class="wallet-form">
+    {% csrf_token %}
+    <label for="id_wallet_type">Wallet type:</label>
+    {{ form.wallet_type }}
+    <div class="card-fields">
+      <label for="id_card_type">Card type:</label>
+      {{ form.card_type }}
+      <label for="id_card_number">Card number:</label>
+      {{ form.card_number }}
+      <label for="id_card_holder">Card holder:</label>
+      {{ form.card_holder }}
+      <label for="id_card_expiry">Card expiry:</label>
+      {{ form.card_expiry }}
+      <label for="id_card_cvv">Card cvv:</label>
+      {{ form.card_cvv }}
+      <label for="id_bank_name">Bank name:</label>
+      {{ form.bank_name }}
+    </div>
+    <div class="bank-fields">
+      <label for="id_bank_name">Bank name:</label>
+      {{ form.bank_name }}
+      <label for="id_account_number">Account number:</label>
+      {{ form.account_number }}
+      <label for="id_card_holder">A/C Holder:</label>
+      {{ form.card_holder }}
+      <label for="id_ifsc_code">IFSC code:</label>
+      {{ form.ifsc_code }}
+    </div>
+    <label for="id_notes">Notes:</label>
+    {{ form.notes }}
+    <div class="form-actions">
+      <button type="submit" class="btn">Save</button>
+      <a href="{% url 'wallet_list' %}" class="btn" style="background:#222;color:#fff;">Cancel</a>
+    </div>
+  </form>
+</div>
+<script>
+const walletType = document.getElementById('id_wallet_type');
+const cardType = document.getElementById('id_card_type');
+function toggleFields() {
+  const cardFields = document.querySelectorAll('.card-fields label, .card-fields input, .card-fields select');
+  const bankFields = document.querySelectorAll('.bank-fields label, .bank-fields input');
+  if (walletType.value === 'card') {
+    cardFields.forEach(e => e.style.display = 'block');
+    bankFields.forEach(e => e.style.display = 'none');
+  } else {
+    cardFields.forEach(e => e.style.display = 'none');
+    bankFields.forEach(e => e.style.display = 'block');
+  }
+}
+if (walletType) {
+  walletType.addEventListener('change', toggleFields);
+  window.addEventListener('DOMContentLoaded', toggleFields);
+}
+</script>
+{% endblock %}

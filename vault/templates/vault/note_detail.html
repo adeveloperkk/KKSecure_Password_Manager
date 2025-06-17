@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width:900px;margin:2.5rem auto;padding:2.5rem 2rem;background:#fff;border-radius:24px;box-shadow:0 2px 16px #0002;position:relative;">
+  <h2 style="text-align:center;margin-bottom:2rem;color:#232733;">{{ note.title }}</h2>
+  <div style="margin-bottom:1.2em;"><strong style="color:#ffd700;">Created at:</strong> {{ note.created_at|date:'F j, Y, g:i a' }}</div>
+  <div style="margin-bottom:1.2em;"><strong style="color:#ffd700;">Content:</strong><br>
+    <div style="min-height:120px;font-size:1.15em;line-height:1.7;padding:1em 0;word-break:break-word;">{{ note.content|safe }}</div>
+  </div>
+  <div style="display:flex;gap:1em;justify-content:center;margin-top:2em;">
+    <a href="{% url 'note_edit' note.pk %}" style="background:#ffd700;color:#232733;padding:0.7em 2em;border-radius:10px;font-weight:600;text-decoration:none;">Edit</a>
+    <a href="{% url 'note_delete' note.pk %}" style="background:#ff5252;color:#fff;padding:0.7em 2em;border-radius:10px;font-weight:600;text-decoration:none;">Delete</a>
+    <a href="{% url 'note_list' %}" style="background:#ececec;color:#232733;padding:0.7em 2em;border-radius:10px;font-weight:600;text-decoration:none;">Back</a>
+  </div>
+  <div style="position:absolute;bottom:2.5rem;right:2rem;color:#888;font-size:0.98em;text-align:right;">
+    <div>Last Modified: {{ note.updated_at|date:'F j, Y, g:i a' }}</div>
+  </div>
+</div>
+{% endblock %}

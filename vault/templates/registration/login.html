@@ -1,17 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Login</h2>
-<form method="post" style="background:#393e46;padding:1.5rem;border-radius:12px;box-shadow:0 2px 8px #23252633;">{% csrf_token %}
-  <label>Username:
-    <input type="text" name="username" required autocomplete="username">
-  </label>
-  <label>Password:
-    <input type="password" name="password" required autocomplete="current-password">
-  </label>
-  <button type="submit" class="btn">Login</button>
-  <input type="hidden" name="next" value="{{ next }}">
-</form>
-{% if form.errors %}
-  <p style="color:#ff6b6b;text-align:center;">Invalid username or password.</p>
-{% endif %}
+<div style="display:flex;justify-content:center;align-items:center;height:100vh;background:#f7f5f0;">
+  <div style="background:#f6f3ee;padding:3rem 2.5rem 2.5rem 2.5rem;border-radius:2rem;box-shadow:0 2px 16px #23252622;min-width:350px;max-width:400px;width:100%;text-align:center;">
+    <div style="margin-bottom:1.5rem;">
+      <span class="material-icons" style="font-size:5rem;color:#bdb7ae;">fingerprint</span>
+    </div>
+    <h2 style="font-weight:700;margin-bottom:0.5rem;">Unlock your vault</h2>
+    <p style="color:#666;font-size:1rem;margin-bottom:2rem;">Enter your vault password to access your data.</p>
+    <form id="loginForm" method="post" style="display:flex;flex-direction:column;gap:1.2rem;align-items:stretch;">{% csrf_token %}
+      <div style="position:relative;">
+        <input id="username" type="text" name="username" placeholder="UserName" required autocomplete="username" style="width:100%;padding:0.9em 2.5em 0.9em 1em;border-radius:8px;border:1.5px solid #ccc;font-size:1.1em;">
+        
+      </div>
+      <div style="position:relative;">
+        <input id="password" type="password" name="password" placeholder="Vault password" required autocomplete="current-password" style="width:100%;padding:0.9em 2.5em 0.9em 1em;border-radius:8px;border:1.5px solid #ccc;font-size:1.1em;">
+        <span id="togglePassword" class="material-icons" style="position:absolute;right:0.8em;top:50%;transform:translateY(-50%);color:#bdb7ae;cursor:pointer;">visibility</span>
+      </div>
+      <button id="unlockBtn" type="submit" class="btn" style="margin-top:1.5rem;background:#00000;color:#bdb7ae;font-size:1.2em;font-weight:700;padding:0.9em 0;border-radius:1.5em;opacity:0.7;cursor:not-allowed;">Unlock</button>
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    {% if form.errors %}
+      <p style="color:#ff6b6b;text-align:center;margin-top:1em;">Invalid username or password.</p>
+    {% endif %}
+  </div>
+</div>
+<script>
+  // Enable Unlock button only if both fields are filled
+  const username = document.getElementById('username');
+  const password = document.getElementById('password');
+  const unlockBtn = document.getElementById('unlockBtn');
+  function checkFields() {
+    if (username.value.trim() && password.value.trim()) {
+      unlockBtn.disabled = false;
+      unlockBtn.style.opacity = 1;
+      unlockBtn.style.cursor = 'pointer';
+    } else {
+      unlockBtn.disabled = true;
+      unlockBtn.style.opacity = 0.7;
+      unlockBtn.style.cursor = 'not-allowed';
+    }
+  }
+  username.addEventListener('input', checkFields);
+  password.addEventListener('input', checkFields);
+  checkFields(); // <-- Fix: run once on page load
+
+  // Toggle password visibility
+  const togglePassword = document.getElementById('togglePassword');
+  togglePassword.addEventListener('click', function() {
+    if (password.type === 'password') {
+      password.type = 'text';
+      togglePassword.textContent = 'visibility_off';
+    } else {
+      password.type = 'password';
+      togglePassword.textContent = 'visibility';
+    }
+  });
+</script>
 {% endblock %}

@@ -7,44 +7,185 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/material.css' %}">
+    <style>
+        body { background: #f7f7f7; font-family: 'Roboto', sans-serif; }
+        .main-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1.5px solid #ececec;
+            padding: 2rem 1.2rem 1.2rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            transition: left 0.3s, box-shadow 0.3s;
+            z-index: 2000;
+        }
+        .sidebar .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #222;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            margin-bottom: 2rem;
+        }
+        .sidebar .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sidebar .nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.8em;
+            padding: 0.7em 1em;
+            border-radius: 8px;
+            color: #222;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .sidebar .nav a.active, .sidebar .nav a:hover {
+            background: #f0f0f0;
+        }
+        .sidebar .nav .material-icons {
+            font-size: 1.3em;
+        }
+        .sidebar .section-title {
+            font-size: 1em;
+            color: #888;
+            margin: 1.5em 0 0.5em 0.5em;
+            font-weight: 700;
+        }
+        .main-content {
+            flex: 1;
+            padding: 2.5rem 3.5rem;
+            background: #f7f7f7;
+        }
+        .topbar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1.5em;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+        .topbar .user {
+            color: #222;
+            font-weight: 500;
+        }
+        .topbar .btn {
+            background: #ececec;
+            color: #222;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5em 1.2em;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        /* Responsive sidebar */
+        @media (max-width: 900px) {
+            .main-layout { flex-direction: column; }
+            .sidebar {
+                position: fixed;
+                left: -270px;
+                top: 0;
+                height: 100vh;
+                box-shadow: 2px 0 16px #0002;
+                transition: left 0.3s, box-shadow 0.3s;
+            }
+            .sidebar.open {
+                left: 0;
+                box-shadow: 2px 0 16px #0004;
+            }
+            .main-content {
+                padding: 1.2rem 0.5rem;
+            }
+            .menu-btn {
+                display: flex !important;
+            }
+        }
+        @media (max-width: 700px) {
+            .main-content {
+                padding: 0.5rem 0.2rem;
+            }
+        }
+        .menu-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            margin-right: auto;
+            margin-left: 0.5em;
+            box-shadow: 0 2px 8px #0001;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div class="bg-blur"></div>
-    <div class="material-topbar">
-        <span class="material-logo">
-            <span class="material-icons">vpn_key</span>
-            PassVault
-        </span>
-        <div>
+<div class="main-layout">
+    {% if user.is_authenticated %}
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <span class="material-icons" style="color:#ffd700;">vpn_key</span>
+            <a href="{% url 'password_list' %}" style="color:inherit;text-decoration:none;">PassVault</a>
+        </div>
+        <nav class="nav">
+            <a href="{% url 'password_list' %}" class="{% if request.resolver_match.url_name == 'password_list' %}active{% endif %}"><span class="material-icons">lock</span> Logins</a>
+            <a href="{% url 'wallet_list' %}" class="{% if request.resolver_match.url_name == 'wallet_list' %}active{% endif %}"><span class="material-icons">account_balance_wallet</span> Wallet</a>
+            <a href="{% url 'save_event_list' %}" class="{% if request.resolver_match.url_name == 'save_event_list' %}active{% endif %}"><span class="material-icons">event</span> Save Event</a>
+            <a href="{% url 'note_list' %}" class="{% if request.resolver_match.url_name == 'note_list' %}active{% endif %}"><span class="material-icons">sticky_note_2</span> Notes</a>
+        </nav>
+        <div class="section-title">SECURITY & PREFERENCES</div>
+        <nav class="nav">
+            <a href="{% url 'import_passwords' %}"><span class="material-icons">file_upload</span> Import data to my vault</a>
+            <a href="{% url 'export_passwords' %}"><span class="material-icons">file_download</span> Export data from my vault</a>
+            <a href="#" class="disabled"><span class="material-icons">dashboard</span> Safety Dashboard</a>
+        </nav>
+        <div class="section-title">MORE FEATURES</div>
+        <nav class="nav">
+            <a href="{% url 'password_generator' %}" class="{% if request.resolver_match.url_name == 'password_generator' %}active{% endif %}"><span class="material-icons">password</span> Password Generator</a>
+        </nav>
+    </aside>
+    {% endif %}
+    <main class="main-content">
+        <div class="topbar">
             {% if user.is_authenticated %}
-                <span style="color:#dbdbdb;font-weight:500;margin-right:1rem;">{{ user.username }}</span>
+                <button class="menu-btn" id="menuBtn" aria-label="Open menu"><span class="material-icons">menu</span></button>
+                <span class="user">{{ user.email|default:user.username }}</span>
                 <form action="/accounts/logout/" method="post" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn" style="width:auto;padding:0.5rem 1.2rem;">Logout</button>
+                    <button type="submit" class="btn">Logout</button>
                 </form>
             {% else %}
-                <a href="/accounts/login/" class="btn" style="width:auto;padding:0.5rem 1.2rem;">Login</a>
+                <a href="/accounts/login/" class="btn">Login</a>
             {% endif %}
         </div>
-    </div>
-    <div class="material-container">
         {% block content %}{% endblock %}
-    </div>
-    <script>
-    // Button ripple effect for all .btn, .premium-btn, .premium-btn-cancel
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('button, .btn, .premium-btn, .premium-btn-cancel').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          const circle = document.createElement('span');
-          circle.className = 'ripple';
-          const rect = btn.getBoundingClientRect();
-          circle.style.left = (e.clientX - rect.left) + 'px';
-          circle.style.top = (e.clientY - rect.top) + 'px';
-          btn.appendChild(circle);
-          setTimeout(() => circle.remove(), 600);
-        });
-      });
+    </main>
+</div>
+<script>
+  // Sidebar toggle for mobile
+  const menuBtn = document.getElementById('menuBtn');
+  const sidebar = document.getElementById('sidebar');
+  if(menuBtn && sidebar) {
+    menuBtn.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
     });
-    </script>
+    // Optional: close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+      if(window.innerWidth <= 900 && sidebar.classList.contains('open')) {
+        if(!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+          sidebar.classList.remove('open');
+        }
+      }
+    });
+  }
+</script>
 </body>
 </html>

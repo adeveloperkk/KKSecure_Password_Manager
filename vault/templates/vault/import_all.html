@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Import All Data</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" name="csvfile" accept=".csv" required>
+  <button type="submit" class="search-btn">Import All Data</button>
+</form>
+<p style="margin-top:1em;color:#888;">Upload a CSV file exported from the Export All Data feature.</p>
+{% endblock %}

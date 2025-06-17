@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .search-sort-bar {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.2rem;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .search-input {
+    flex: 2;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #232733;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .search-input:focus {
+    border: 1.5px solid #ffd700;
+    background: #fffbe6;
+  }
+  .sort-select {
+    flex: 1;
+    border: 1.5px solid #ececec;
+    border-radius: 12px;
+    padding: 0.8em 1.2em;
+    font-size: 1.1em;
+    background: #fafbfc;
+    color: #232733;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .sort-select:focus {
+    border: 1.5px solid #ffd700;
+    background: #fffbe6;
+  }
+  .search-btn {
+    background: #ffd700;
+    color: #232733;
+    border: none;
+    border-radius: 12px;
+    padding: 0.8em 2.2em;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #0001;
+    transition: background 0.2s;
+  }
+  .search-btn:hover {
+    background: #ffe066;
+  }
+  .event-table {
+    width: 100%;
+    margin: 2em auto 0 auto;
+    max-width: 900px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f8f9fa;
+    box-shadow: 0 2px 16px #0002;
+  }
+  .event-table th, .event-table td {
+    padding: 1em 1.2em;
+    color: #333;
+    font-size: 1.08em;
+  }
+  .event-table th {
+    background: #e9ecef;
+    font-weight: 700;
+    border-bottom: 2px solid #ffd700;
+  }
+  .event-table tr:not(:last-child) {
+    border-bottom: 1px solid #dee2e6;
+  }
+  .event-table td.actions {
+    min-width: 120px;
+    text-align: right;
+  }
+  .event-table a.action-btn {
+    display: inline-block;
+    margin-left: 0.3em;
+    margin-right: 0.3em;
+    padding: 0.3em 1em;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1em;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .event-table a.action-btn.edit { background: #ffd700; color: #232733; }
+  .event-table a.action-btn.delete { background: #ff5252; color: #fff; }
+  .event-table a.action-btn.view { background: #2979ff; color: #fff; }
+  .event-table a.action-btn.edit:hover { background: #ffe066; }
+  .event-table a.action-btn.delete:hover { background: #ff7b7b; }
+  .event-table a.action-btn.view:hover { background: #5393ff; }
+  @media (max-width: 700px) {
+    .search-sort-bar { flex-direction: column !important; gap: 0.7rem !important; align-items: stretch !important; }
+    .event-table th, .event-table td { padding: 0.7em 0.5em; font-size: 0.98em; }
+  }
+</style>
+<h2 style="text-align:center;color:#444;font-size:2.2em;font-weight:700;margin-bottom:2rem;">Save Events</h2>
+<form method="get" class="search-sort-bar">
+  <input type="text" name="q" class="search-input" placeholder="Search events..." value="{{ query|default:'' }}">
+  <select name="filter_by" class="sort-select">
+    <option value="">Sort by</option>
+    <option value="recent" {% if filter_by == 'recent' %}selected{% endif %}>Most Recent</option>
+    <option value="title" {% if filter_by == 'title' %}selected{% endif %}>Title</option>
+    <option value="date" {% if filter_by == 'date' %}selected{% endif %}>Date</option>
+  </select>
+  <button type="submit" class="search-btn">Search</button>
+</form>
+{% if events %}
+  <table class="event-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for event in events %}
+      <tr>
+        <td>{{ event.title }}</td>
+        <td>{{ event.event_date|date:'F j, Y' }}</td>
+        <td>{{ event.description|truncatechars:60 }}</td>
+        <td class="actions">
+          <a href="{% url 'save_event_detail' event.pk %}" class="action-btn view" title="View">View</a>
+          <a href="{% url 'save_event_edit' event.pk %}" class="action-btn edit" title="Edit">Edit</a>
+          <a href="{% url 'save_event_delete' event.pk %}" class="action-btn delete" title="Delete">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" style="text-align:center;color:#aaa;padding:2rem;">No events found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No events saved yet.</p>
+{% endif %}
+<!-- Floating circular add button for Save Event -->
+<a href="{% url 'save_event_create' %}" style="position:fixed;bottom:32px;right:32px;width:60px;height:60px;background:#202020;color:#ff9800;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:1000;text-decoration:none;transition:background 0.2s;">
+  <span class="material-icons" style="font-size:2.5em;">add</span>
+</a>
+{% endblock %}
