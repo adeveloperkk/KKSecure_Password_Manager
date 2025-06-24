@@ -58,10 +58,11 @@ A secure and modern **Password Manager** web application built with **Django**, 
 
 2. **Create a virtual environment**
    ```bash
-   python -m venv env
-   source env/bin/activate
+   python -m venv envkk
+   # On Linux
+   source envkk/bin/activate
    # On Windows:
-   # env\Scripts\activate
+   .\envkk\Scripts\activate
    ```
 
 3. **Install dependencies**
