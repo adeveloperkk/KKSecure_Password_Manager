@@ -1,5 +1,5 @@
 
-# 🔐 Django Password Manager – Norton Clone
+# 🔐 KKSecure Password Manager -Django
 
 A secure and modern **Password Manager** web application built with **Django**, inspired by **Norton Password Manager**. This project allows users to generate, store, and manage their credentials securely using advanced encryption and a responsive, user-friendly UI.
 
