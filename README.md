@@ -79,7 +79,6 @@ A secure and modern **Password Manager** web application built with **Django**, 
    VAULT_KEY=YourVaultKey
    DATABASE_URL=YourDatabase Address
    # Django environment variables
-DATABASE_URL=postgresql://postgres.ovcmqamquvmarzhsznib:52535455@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
    ```
 
 5. **Apply migrations & run the server**
