@@ -11,8 +11,6 @@ A secure and modern **Password Manager** web application built with **Django**, 
 
 ![Login Page]![image](https://github.com/user-attachments/assets/ed46154f-fd93-484c-aa34-bace84895082)
 
-![image](https://github.com/user-attachments/assets/55c6b0bd-28cb-4b62-a4af-7dfed108d8a9)
-
 ![Screenshot 2025-06-24 143127](https://github.com/user-attachments/assets/8b03405b-cee2-4fd3-8a00-9ac663222732)
 
 ![Screenshot 2025-06-24 143702](https://github.com/user-attachments/assets/e55a1b5e-0977-470b-961c-3a57f8efcd62)
