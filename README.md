@@ -9,14 +9,24 @@ A secure and modern **Password Manager** web application built with **Django**, 
 
 > *Add your screenshots or a GIF demo here*
 
-![Login Page]![image](https://github.com/user-attachments/assets/8b75f0bb-7c14-4a8e-9f0a-5d8e25621270)
-
-![Vault Dashboard]![image](https://github.com/user-attachments/assets/c9255bc5-d76c-4bf2-8fc8-11951ff8848f) 
-![image](https://github.com/user-attachments/assets/74bee671-3115-475c-92bb-9f84ccbc3797)
-![image](https://github.com/user-attachments/assets/76a0ac3a-b3e6-427d-83fb-50152689aa2c)
-![image](https://github.com/user-attachments/assets/ec89160c-fcb1-4ccf-91e9-02d4bd62a9d4)
+![Login Page]![image](https://github.com/user-attachments/assets/ed46154f-fd93-484c-aa34-bace84895082)
 
 
+![Vault Dashboard]![image]([https://github.com/user-attachments/assets/2db1299c-41e1-46a4-8b70-c59cb16f0a5f])
+
+![image](https://github.com/user-attachments/assets/55c6b0bd-28cb-4b62-a4af-7dfed108d8a9)
+
+![Screenshot 2025-06-24 143127](https://github.com/user-attachments/assets/8b03405b-cee2-4fd3-8a00-9ac663222732)
+
+![Screenshot 2025-06-24 143702](https://github.com/user-attachments/assets/e55a1b5e-0977-470b-961c-3a57f8efcd62)
+
+![image](https://github.com/user-attachments/assets/92bad8b9-7999-4cfd-806e-b08691d360f8)
+
+![image](https://github.com/user-attachments/assets/dacca035-6d1a-42e8-bbcf-c311d39e57c4)
+
+![image](https://github.com/user-attachments/assets/3265e5a9-a181-4909-9d04-f9c75cdb4c7a)
+
+![image](https://github.com/user-attachments/assets/3584e94c-8b1a-4aba-8a98-b726bb8550fc)
 
 
 ---
